@@ -1,5 +1,7 @@
 package org.opendaylight.ovsdb.internal.jsonrpc;
 
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 import junit.framework.TestCase;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.After;
@@ -20,7 +22,7 @@ public class TestClient extends TestCase {
         public void setupServer() throws Exception {
             bootstrapper.startServer(serverport,
                     jsonRpcDecoder,
-                    new JsonRpcBinderHandler(new ObjectMapper()));
+                    new LoggingHandler(LogLevel.DEBUG));
         }
 
         public void shutDownServer() throws InterruptedException {

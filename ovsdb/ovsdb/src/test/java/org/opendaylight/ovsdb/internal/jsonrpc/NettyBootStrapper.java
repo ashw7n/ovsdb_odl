@@ -5,9 +5,6 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.opendaylight.ovsdb.internal.jsonrpc.JsonRpcBinderHandler;
-import org.opendaylight.ovsdb.internal.jsonrpc.JsonRpcDecoder;
 
 import java.util.concurrent.TimeUnit;
 

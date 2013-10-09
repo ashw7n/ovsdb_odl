@@ -25,7 +25,7 @@ public class OvsdbTestSetManager {
         connectionService.init();
         String identifier = "TEST";
         Map<ConnectionConstants, String> params = new HashMap<ConnectionConstants, String>();
-        params.put(ConnectionConstants.ADDRESS, "172.28.30.51");
+        params.put(ConnectionConstants.ADDRESS, "192.168.111.129");
 
         Node node = connectionService.connect(identifier, params);
         if(node == null){
@@ -41,7 +41,7 @@ public class OvsdbTestSetManager {
          */
         ConfigurationService configurationService = new ConfigurationService();
         configurationService.setConnectionServiceInternal(connectionService);
-        configurationService.setManager(node, "ptcp:6634:172.16.58.128");
+        configurationService.setManager(node, "ptcp:6632:192.168.111.129");
     }
 
 }

@@ -1,5 +1,6 @@
 package org.opendaylight.ovsdb.internal;
 
+import com.google.common.collect.Lists;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -14,10 +15,13 @@ import org.opendaylight.controller.sal.connection.IPluginInConnectionService;
 import org.opendaylight.controller.sal.core.Node;
 import org.opendaylight.controller.sal.utils.Status;
 import org.opendaylight.controller.sal.utils.StatusCode;
+import org.opendaylight.ovsdb.internal.jsonrpc.JsonRpcDecoder;
+import org.opendaylight.ovsdb.internal.jsonrpc.JsonRpcServiceBinderHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetAddress;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -28,13 +32,26 @@ import java.util.concurrent.ConcurrentMap;
  * the flow programming and relay them to functional modules above SAL.
  */
 public class ConnectionService implements IPluginInConnectionService, IConnectionServiceInternal {
+
+    //todo  : i think we should have a some kind of object registry like spring or guice
+
     protected static final Logger logger = LoggerFactory.getLogger(ConnectionService.class);
 
     private static final Integer defaultOvsdbPort = 6632;
     ConcurrentMap<String, Connection> ovsdbConnections;
+    List<ChannelHandler> handlers = null;
 
     public void init() {
         ovsdbConnections = new ConcurrentHashMap<String, Connection>();
+
+        //backward compatability with other tests and stuff
+        if (handlers == null) {
+            List<ChannelHandler> _handlers = Lists.newArrayList();
+            _handlers.add(new LoggingHandler(LogLevel.INFO));
+            _handlers.add(new JsonRpcDecoder(100000));
+            _handlers.add(new StringEncoder(CharsetUtil.UTF_8));
+            _handlers.add(new MessageHandler());
+        }
     }
 
     /**
@@ -100,16 +117,13 @@ public class ConnectionService implements IPluginInConnectionService, IConnectio
             bootstrap.handler(new ChannelInitializer<SocketChannel>() {
                 @Override
                 public void initChannel(SocketChannel channel) throws Exception {
-
-                  /*Add new Handlers here.
-                  Break out into todo break out into channel Init Class*/
-                    channel.pipeline().addLast(
-                            new LoggingHandler(LogLevel.INFO),
-                            new JsonDecoder(),
-                            new StringEncoder(CharsetUtil.UTF_8),
-                            new MessageHandler());
+                    for (ChannelHandler handler : handlers) {
+                        channel.pipeline().addLast(handler);
+                    }
                 }
             });
+
+
             //logger.debug("1 Channel INIT " + "Identifier=>" + identifier + "Address=>" + address);
             ChannelFuture future = bootstrap.connect(address, port).sync();
 
@@ -127,6 +141,14 @@ public class ConnectionService implements IPluginInConnectionService, IConnectio
         return null;
     }
 
+    public List<ChannelHandler> getHandlers() {
+        return handlers;
+    }
+
+    public void setHandlers(List<ChannelHandler> handlers) {
+        this.handlers = handlers;
+    }
+
     @Override
     public Connection getConnection(Node node) {
         String identifier = (String) node.getID();
@@ -140,4 +162,5 @@ public class ConnectionService implements IPluginInConnectionService, IConnectio
     @Override
     public void notifyNodeDisconnectFromMaster(Node arg0) {
     }
+
 }
