@@ -1,15 +1,23 @@
 package org.opendaylight.ovsdb.obj;
 
+public abstract class Table<E extends Table> {
 
-public class Table {
+    public abstract Name<E> getName();
 
-    private String name;
+    public static abstract class Name<E extends Table> {
+        String name;
 
-    protected Table(String name) {
-        this.name = name;
-    }
+        protected Name(String name) {
+            this.name = name;
+        }
 
-    public String getName() {
-        return name;
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public String toString() {
+            return "Table:" + name;
+        }
     }
 }

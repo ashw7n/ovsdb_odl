@@ -1,10 +1,6 @@
 package org.opendaylight.ovsdb.obj;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonNullFormatVisitor;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.google.common.collect.Lists;
 
 import java.util.List;

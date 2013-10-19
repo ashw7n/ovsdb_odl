@@ -11,15 +11,20 @@ public class MonitorRequestBuilder implements Params {
 
     Map<String, MonitorRequest> requests = Maps.newLinkedHashMap();
 
-
-    public <T extends Table> MonitorRequest<T> monitor(T table) {
-        MonitorRequest<T> req = new MonitorRequest<T>();
-        requests.put(table.getName(), req);
-        return req;
-    }
-
+    @Override
     public List<Object> params() {
-        return Lists.newArrayList("Open_vSwitch", null, requests);
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
+
+
+//    public <T extends Table> MonitorRequest<T> monitor(T table) {
+//        MonitorRequest<T> req = new MonitorRequest<T>();
+//        requests.put(table.getName(), req);
+//        return req;
+//    }
+//
+//    public List<Object> params() {
+//        return Lists.newArrayList("Open_vSwitch", null, requests);
+//    }
 
 }

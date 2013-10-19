@@ -54,12 +54,12 @@ public class OVSDBNettyFactoryTest extends TestCase {
 
         MonitorRequestBuilder monitorReq = new MonitorRequestBuilder();
 
-        monitorReq.monitor(Tables.bridge)
-                .column(Bridge.Column.controller)
-                .column(Bridge.Column.fail_mode);
-
-        monitorReq.monitor(Tables.port)
-                .column(Port.Column.trunks);
+//        monitorReq.monitor(Tables.bridge)
+//                .column(Bridge.Column.controller)
+//                .column(Bridge.Column.fail_mode);
+//
+//        monitorReq.monitor(Tables.port)
+//                .column(Port.Column.trunks);
 
 
         ovsdb.monitor(monitorReq);

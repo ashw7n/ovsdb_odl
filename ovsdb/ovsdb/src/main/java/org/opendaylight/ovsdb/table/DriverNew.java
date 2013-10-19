@@ -258,7 +258,7 @@ String tlmsg = "{\"Manager\":{\"2928ae71-fc80-4ead-b156-fbd2a97ee308\":{\"old\":
             Set portTable = hostreply.getResults().getPortTable().entrySet();
             Iterator itport = portTable.iterator();
             while(itport.hasNext()) {
-                System.out.println("Port Table Row " + i_port++ + "==> " + itport.next());
+                System.out.println("Port Table TableUpdate " + i_port++ + "==> " + itport.next());
             }
             System.out.println("------------Port UUID List---------------------------------------------------------");
             //Get Port UUIDs
@@ -275,7 +275,7 @@ String tlmsg = "{\"Manager\":{\"2928ae71-fc80-4ead-b156-fbd2a97ee308\":{\"old\":
             Set bridgeTable = hostreply.getResults().getBridgeTable().entrySet();
             Iterator itbridge = bridgeTable.iterator();
             while(itbridge.hasNext()) {
-                System.out.println("Port Table Row " + i_bridge++ + "==> " + itbridge.next());
+                System.out.println("Port Table TableUpdate " + i_bridge++ + "==> " + itbridge.next());
             }
             System.out.println("--------------------------------------------------------------------------------");
             System.out.println(hostreply.getResults().portTable.toString());
