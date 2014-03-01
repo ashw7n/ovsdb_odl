@@ -8,7 +8,7 @@ import org.opendaylight.ovsdb.lib.notation.Function;
  * @author ashw7n
  */
 
-public class ColumnSchema {
+public class ColumnSchema<E extends TableSchema, D> {
     String name;
     ColumnType type;
     boolean ephemeral;
@@ -32,20 +32,20 @@ public class ColumnSchema {
         return name;
     }
 
-    public Condition opEqual(String some) {
-        return new Condition(this.getName(), Function.EQUALS, some);
+    public Condition opEqual(D data) {
+        return new Condition(this.getName(), Function.EQUALS, data);
     }
 
-    public Condition opGreaterThan(Object val) {
-        return new Condition(this.getName(), Function.GREATER_THAN, val);
+    public Condition opGreaterThan(D data) {
+        return new Condition(this.getName(), Function.GREATER_THAN, data);
     }
 
-    public Condition opLesserThan(int val) {
-        return new Condition(this.getName(), Function.GREATER_THAN, val);
+    public Condition opLesserThan(D data) {
+        return new Condition(this.getName(), Function.GREATER_THAN, data);
     }
 
-    public Condition opLesserThanOrEquals(Object val) {
-        return new Condition(this.getName(), Function.LESS_THAN_OR_EQUALS, val);
+    public Condition opLesserThanOrEquals(D data) {
+        return new Condition(this.getName(), Function.LESS_THAN_OR_EQUALS, data);
     }
 
     @Override

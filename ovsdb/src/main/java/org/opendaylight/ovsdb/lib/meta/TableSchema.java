@@ -1,9 +1,12 @@
 package org.opendaylight.ovsdb.lib.meta;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.opendaylight.ovsdb.OpenVswitch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -11,9 +14,12 @@ import java.util.Map;
 /**
  * @author araveendrann
  */
-public class TableSchema {
+public class TableSchema<E extends TableSchema<E>> {
     protected static final Logger logger = LoggerFactory.getLogger(TableSchema.class);
     private Map<String, ColumnSchema> columns;
+
+    public TableSchema() {
+    }
 
     public TableSchema(Map<String, ColumnSchema> columns) {
         this.columns = columns;
@@ -33,10 +39,26 @@ public class TableSchema {
             columns.put(column.getKey(), ColumnSchema.fromJson(column.getKey(), column.getValue()));
         }
 
-        return new TableSchema(columns);
+       TableSchema tableSchema = new TableSchema(columns);
+       return tableSchema;
     }
 
-    public ColumnSchema column(String column) {
+    public <E extends TableSchema<E>> E as(Class<E> clazz) {
+        try {
+            Constructor<E> e = clazz.getConstructor(TableSchema.class);
+            return e.newInstance(this);
+        } catch (Exception e) {
+            throw new RuntimeException("exception constructing instance of clazz " + clazz, e);
+        }
+    }
+
+    public OpenVswitch.Insert<E> insert() {
+        return new OpenVswitch.Insert<>(this);
+    }
+
+
+
+    public <D> ColumnSchema<E, D> column(String column) {
         //todo exception handling
         return columns.get(column);
     }

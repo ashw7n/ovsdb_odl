@@ -1,6 +1,7 @@
 package org.opendaylight.ovsdb.lib.meta;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.opendaylight.ovsdb.OpenVswitch;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -39,8 +40,17 @@ public class DatabaseSchema {
         return new DatabaseSchema(tables);
     }
 
-    public TableSchema table(String bridge) {
+    public OpenVswitch.Transaction beginTransaction() {
+        return new OpenVswitch.Transaction(this);
+    }
+
+    public <E extends TableSchema<E>> TableSchema<E> table(String tableName) {
         //todo : error handling
-        return tables.get(bridge);
+        return tables.get(tableName);
+    }
+
+    public <E extends TableSchema<E>> E table(String tableName, Class<E> clazz) {
+        TableSchema<E> table = table(tableName);
+        return table.as(clazz);
     }
 }

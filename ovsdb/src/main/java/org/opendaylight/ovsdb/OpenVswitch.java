@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ExecutorService;
-import static org.opendaylight.ovsdb.OpenVswitch.Operations.op;
 
 /**
  * @author araveendrann
@@ -53,8 +52,8 @@ public class OpenVswitch {
         }, executorService);
     }
 
-    public TransactBuilder transact(){
-        return new TransactBuilder(this);
+    public Transaction transact(){
+        return new Transaction(this);
     }
 
     public void transact(List<Operation> operations) {
@@ -71,15 +70,21 @@ public class OpenVswitch {
     }
 
 
-    public static class TransactBuilder {
+    public static class Transaction {
+
+        private  DatabaseSchema eDatabaseSchema;
         OpenVswitch ovs;
         ArrayList<Operation> operations = Lists.newArrayList();
 
-        public TransactBuilder(OpenVswitch ovs) {
+        public Transaction(OpenVswitch ovs) {
             this.ovs = ovs;
         }
 
-        public TransactBuilder add(Operation operation) {
+        public Transaction(DatabaseSchema eDatabaseSchema) {
+            this.eDatabaseSchema = eDatabaseSchema;
+        }
+
+        public Transaction add(Operation operation) {
             operations.add(operation);
             return this;
         }
@@ -93,7 +98,7 @@ public class OpenVswitch {
         }
     }
 
-    public static class Insert extends Operation {
+    public static class Insert<E extends TableSchema<E>> extends Operation {
         TableSchema schema;
         String uuid;
         private String uuidName;
@@ -111,12 +116,12 @@ public class OpenVswitch {
         public Insert() {
         }
 
-        public Insert(TableSchema schema) {
+        public Insert(TableSchema<E> schema) {
             this.schema = schema;
         }
 
-        public Insert values(ColumnSchema columnSchema, Object value) {
-            return null;
+        public <D, C extends TableSchema<E>> Insert<E> value(ColumnSchema<C, D> columnSchema, D value) {
+            return this;
         }
 
     }
