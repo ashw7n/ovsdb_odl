@@ -8,7 +8,7 @@ import org.opendaylight.ovsdb.lib.notation.Function;
  * @author ashw7n
  */
 
-public class ColumnSchema<E extends TableSchema, D> {
+public class ColumnSchema<E extends TableSchema<E>, D> {
     String name;
     ColumnType type;
     boolean ephemeral;
@@ -52,5 +52,14 @@ public class ColumnSchema<E extends TableSchema, D> {
     public String toString() {
         return "ColumnType [type=" + type + ", ephemeral=" + ephemeral
                 + ", mutable=" + mutable + "]";
+    }
+
+    /**
+     * Validates the passed in value against the constraints set for this ColumnSchema
+     * @param value
+     * @throws java.lang.RuntimeException (validation exception)
+     */
+    public void validate(Object value)throws RuntimeException {
+        //todo(type check and validate based on constraints set)
     }
 }

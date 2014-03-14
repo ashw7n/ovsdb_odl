@@ -1,12 +1,11 @@
 package org.opendaylight.ovsdb.lib.meta;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.opendaylight.ovsdb.OpenVswitch;
+import org.opendaylight.ovsdb.Insert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -16,12 +15,14 @@ import java.util.Map;
  */
 public class TableSchema<E extends TableSchema<E>> {
     protected static final Logger logger = LoggerFactory.getLogger(TableSchema.class);
+    private String name;
     private Map<String, ColumnSchema> columns;
 
     public TableSchema() {
     }
 
-    public TableSchema(Map<String, ColumnSchema> columns) {
+    public TableSchema(String name, Map<String, ColumnSchema> columns) {
+        this.name = name;
         this.columns = columns;
     }
 
@@ -39,7 +40,7 @@ public class TableSchema<E extends TableSchema<E>> {
             columns.put(column.getKey(), ColumnSchema.fromJson(column.getKey(), column.getValue()));
         }
 
-       TableSchema tableSchema = new TableSchema(columns);
+       TableSchema tableSchema = new TableSchema(tableName, columns);
        return tableSchema;
     }
 
@@ -52,8 +53,8 @@ public class TableSchema<E extends TableSchema<E>> {
         }
     }
 
-    public OpenVswitch.Insert<E> insert() {
-        return new OpenVswitch.Insert<>(this);
+    public Insert<E> insert() {
+        return new Insert<>(this);
     }
 
 
@@ -62,4 +63,14 @@ public class TableSchema<E extends TableSchema<E>> {
         //todo exception handling
         return columns.get(column);
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public static class AnyTableSchema extends TableSchema<AnyTableSchema>{}
 }

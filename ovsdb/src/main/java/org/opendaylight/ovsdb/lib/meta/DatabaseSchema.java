@@ -2,6 +2,8 @@ package org.opendaylight.ovsdb.lib.meta;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.opendaylight.ovsdb.OpenVswitch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -11,6 +13,7 @@ import java.util.Map;
  * @author araveendrann
  */
 public class DatabaseSchema {
+    public static Logger logger = LoggerFactory.getLogger(DatabaseSchema.class);
 
     public static String OPEN_VSWITCH_SCHEMA_NAME = "Open_vSwitch";
 
@@ -31,8 +34,7 @@ public class DatabaseSchema {
         //Iterator<Map.Entry<String,JsonNode>> fields = json.fields();
         for(Iterator<Map.Entry<String,JsonNode>> iter = json.get("tables").fields(); iter.hasNext();) {
             Map.Entry<String, JsonNode> table = iter.next();
-            System.out.println("table = " + table.getKey());
-            System.out.println("table.getValue() = " + table.getValue());
+            logger.debug("Read schema for table[{}]:{}" , table.getKey(), table.getValue());
 
             tables.put(table.getKey(), TableSchema.fromJson(table.getKey(), table.getValue()));
         }

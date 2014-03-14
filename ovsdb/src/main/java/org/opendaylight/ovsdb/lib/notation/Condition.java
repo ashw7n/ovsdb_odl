@@ -9,7 +9,6 @@
  */
 package org.opendaylight.ovsdb.lib.notation;
 
-import org.opendaylight.ovsdb.lib.database.ColumnSchema;
 import org.opendaylight.ovsdb.lib.notation.json.ConditionSerializer;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;

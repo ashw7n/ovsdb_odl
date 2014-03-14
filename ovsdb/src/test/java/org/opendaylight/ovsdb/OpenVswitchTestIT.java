@@ -1,27 +1,37 @@
 package org.opendaylight.ovsdb;
 
+import com.google.common.util.concurrent.ListenableFuture;
+import junit.framework.Assert;
 import org.junit.Test;
 import org.opendaylight.ovsdb.lib.message.OvsdbRPC;
-import org.opendaylight.ovsdb.lib.message.operations.Operation;
+import org.opendaylight.ovsdb.lib.message.operations.OperationResult;
+import org.opendaylight.ovsdb.lib.meta.ColumnSchema;
 import org.opendaylight.ovsdb.lib.meta.TableSchema;
 import org.opendaylight.ovsdb.plugin.OvsdbTestBase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static org.opendaylight.ovsdb.OpenVswitch.Operations.op;
 
 /**
- * @author araveendrann
+ * @author Ashwin Raveendran
  */
 public class OpenVswitchTestIT extends OvsdbTestBase {
+    Logger logger = LoggerFactory.getLogger(OpenVswitchTestIT.class);
 
     @Test
-    public void test() throws IOException, InterruptedException {
+    public void test() throws IOException, InterruptedException, ExecutionException {
         TestObjects testConnection = getTestConnection();
         OvsdbRPC rpc = testConnection.connectionService.getConnection(testConnection.node).getRpc();
 
-        OpenVswitch ovs = new OpenVswitch(rpc, Executors.newSingleThreadExecutor());
+        ExecutorService executorService = Executors.newFixedThreadPool(3);
+        OpenVswitch ovs = new OpenVswitch(rpc, executorService);
         ovs.populateSchemaFromDevice();
 
         for (int i = 0; i < 100; i++) {
@@ -30,16 +40,21 @@ public class OpenVswitchTestIT extends OvsdbTestBase {
            }
            Thread.sleep(1000);
         }
-        TableSchema bridge = ovs.schema().table("Bridge");
 
-        ovs.transact()
-                .add(op.insert(bridge).values(bridge.column("name"), "br-int"))
-                .add(op.udpate(bridge)
-                        .set(bridge.column("name"), "br-blah")
-                        .where(bridge.column("name").opEqual("br-int"))
-                            .and(bridge.column("name").opGreaterThan(4)).operation())
-               .execute();
+        TableSchema<TableSchema.AnyTableSchema> bridge = ovs.schema().table("Bridge");
+        ColumnSchema<? extends TableSchema<?>, String> name = bridge.column("name");
 
+        ListenableFuture<List<OperationResult>> results = ovs.transact()
+                .add(op.insert(bridge).value(name, "br-int"))
+                .add(op.update(bridge)
+                        .set(name, "br-blah")
+                        .where(name.opEqual("br-int"))
+                        .and(name.opEqual("br-int")).operation())
+                .execute();
+
+        List<OperationResult> operationResults = results.get();
+        Assert.assertFalse(operationResults.isEmpty());
+        System.out.println("operationResults = " + operationResults);
     }
 
 }
