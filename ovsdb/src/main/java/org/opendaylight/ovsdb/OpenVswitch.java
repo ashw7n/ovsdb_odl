@@ -130,7 +130,7 @@ public class OpenVswitch {
             return this;
         }
 
-        public Update<E> set(ColumnSchema columnSchema, Object value) {
+        public <T extends TableSchema<T>, D> Update<E> set(ColumnSchema<T, D> columnSchema, D value) {
             columnSchema.validate(value);
             this.row.put(columnSchema.getName(), value);
             return this;
